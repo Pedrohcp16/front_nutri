@@ -1,0 +1,60 @@
+.nutrition-section {
+  position: relative;
+  height: 500px; 
+  background-image: url('https://www.vegkit.com/wp-content/uploads/sites/2/2024/01/lunchbox_ideas.jpg');
+  background-size: cover;
+  background-position: center;
+  padding: 40px;
+  display: flex;
+  align-items: center;
+  
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(158, 156, 156, 0.7); /* Cor de fundo com transparência */
+  }
+  
+  .content-container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .text-content {
+    max-width: 50%;
+    padding: 20px;
+    
+    h1 {
+      font-size: 2.5rem;
+      color: #333;
+      margin-bottom: 20px;
+    }
+    
+    p {
+      font-size: 1.2rem;
+      color: #555;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+  }
+  
+  .schedule-button {
+    padding: 12px 25px;
+    background-color: #d85f5f;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+    
+    &:hover {
+      background-color: #c04a4a;
+    }
+  }
+}

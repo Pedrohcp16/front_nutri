@@ -1,0 +1,37 @@
+.contato-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 40px;
+    background-color: #f7e3e3; /* Cor de fundo suave */
+  }
+  
+  .text-content h1 {
+    font-size: 24px;
+    color: #333;
+    max-width: 40%;
+  }
+  
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+  }
+  
+  .contact-form input,
+  .contact-form textarea {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .contact-form button {
+    padding: 12px;
+    background-color: #d85f5f; /* Cor do botão */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
