@@ -1,0 +1,76 @@
+.pacientes-container {
+    display: flex;
+    height: 100vh;
+  }
+  
+  .sidebar {
+    background-color: #c08b89;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .sidebar button {
+    background: white;
+    border: none;
+    padding: 12px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .sidebar .active {
+    background-color: #000;
+    color: white;
+  }
+  
+  .main-content {
+    flex: 1;
+    padding: 40px;
+    background-color: #ebc7be;
+  }
+  
+  .search-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .search-bar input {
+    padding: 10px;
+    border-radius: 20px;
+    border: none;
+    flex: 1;
+  }
+  
+  .search-bar button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    background-color: #c08b89;
+    color: white;
+    font-weight: bold;
+  }
+  
+  table {
+    width: 100%;
+    background-color: #c08b89;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  table thead {
+    background-color: #b27f7d;
+    color: white;
+  }
+  
+  table th, table td {
+    padding: 12px;
+    text-align: center;
+  }
+  
+  table tbody tr {
+    background-color: #e5e5e5;
+    margin-bottom: 10px;
+  }
+  
