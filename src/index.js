@@ -14,6 +14,7 @@ import LoginPage from './pages/LoginPage/LoginPage';
 import CadastrarPacientes from './pages/Pacientes/CadastrarPacientes';
 import ConsultarPacientes from './pages/Pacientes/ConsultarPacientes';
 import Financeiro from './pages/Pacientes/Financeiro';
+import CadastrarServiço from './pages/Pacientes/CadastrarServiço'; // <- Novo import
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -32,14 +33,15 @@ root.render(
         } />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/consultar" element={<ConsultarPacientes />} />
-<Route path="/cadastrar" element={<CadastrarPacientes />} />
-<Route path="/financeiro" element={<Financeiro />} />
-
+        <Route path="/cadastrar" element={<CadastrarPacientes />} />
+        <Route path="/cadastrar-servico" element={<CadastrarServiço />} /> {/* <- Nova rota */}
+        <Route path="/financeiro" element={<Financeiro />} />
       </Routes>
       <Footer />
     </BrowserRouter>
   </React.StrictMode>
 );
+
 
 
 

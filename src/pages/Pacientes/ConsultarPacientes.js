@@ -1,102 +1,121 @@
 import React, { useEffect, useState } from 'react';
 import './Pacientes.scss';
 import { FaEdit, FaTrash } from "react-icons/fa";
+import axios from 'axios';
+import EditarPacienteModal from './EditarPacienteModal.js';
+import Modal from 'react-modal';
+Modal.setAppElement('#root'); 
 
 
 
 const ConsultarPacientes = () => {
-  const [busca, setBusca] = useState('');
-  const [pacientes, setPacientes] = useState([]);
-  const [editando, setEditando] = useState(null);
-  const [formData, setFormData] = useState({
-    nome: '',
-    dataNascimento: '',
-    servico: '',
-    horario: '',
-    preco: ''
-  });
+  const [pacientes, setPacientes] = React.useState([]);
+  const [filtro, setFiltro] = useState('');
+  const [pacienteEditando, setPacienteEditando] = useState(null);
+  const [modalAberto, setModalAberto] = React.useState(false);
+  const [pacienteParaDeletar, setPacienteParaDeletar] = React.useState(null);
+  const [pacienteSelecionado, setPacienteSelecionado] = useState(null);
+  const [mostrarModal, setMostrarModal] = useState(false);
 
   useEffect(() => {
-    buscarPacientes();
+    axios.get('http://localhost:5000/api/pacientes')
+      .then(res => setPacientes(res.data))
+      .catch(err => console.error('Erro ao carregar pacientes:', err));
   }, []);
 
   const buscarPacientes = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/pacientes');
-      const data = await response.json();
-      setPacientes(data);
-    } catch (error) {
-      console.error('Erro ao buscar pacientes:', error);
+      const resposta = await fetch('http://localhost:5000/api/pacientes');
+      const dados = await resposta.json();
+      setPacientes(dados);
+    } catch (erro) {
+      console.error('Erro ao buscar pacientes:', erro);
     }
   };
+  React.useEffect(() => {
+    buscarPacientes();
+  }, []);
+    
 
-  const deletarPaciente = async (id) => {
-    if (!window.confirm('Deseja realmente excluir este paciente?')) return;
+  
+
+  const pacientesFiltrados = pacientes.filter(p =>
+    p.nome.toLowerCase().includes(filtro.toLowerCase())
+  );
+
+  const fetchPacientes = async () => {
+    const res = await fetch('http://localhost:5000/api/pacientes');
+    const data = await res.json();
+    setPacientes(data);
+  };
+  
+  useEffect(() => {
+    fetchPacientes();
+  }, []);
+
+  const formatarData = (dataISO) => {
+    const data = new Date(dataISO);
+    return data.toLocaleDateString('pt-BR');
+  };
+
+  
+  
+  const abrirModal = (paciente) => {
+    setPacienteParaDeletar(paciente);
+    setModalAberto(true);
+    setPacienteSelecionado(paciente);
+    setMostrarModal(true);
+  };
+  
+  const fecharModal = () => {
+    setModalAberto(false);
+    setPacienteParaDeletar(null);
+    setPacienteSelecionado(null);
+    setMostrarModal(false);
+  };
+  
+  const deletarPaciente = async () => {
     try {
-      await fetch(`http://localhost:5000/api/pacientes/${id}`, {
-        method: 'DELETE'
+      await fetch(`http://localhost:5000/api/pacientes/${pacienteSelecionado.id}`, {
+        method: 'DELETE',
       });
-      buscarPacientes(); // Atualiza a lista
-    } catch (error) {
-      console.error('Erro ao deletar paciente:', error);
-    }
-  };
-
-  const iniciarEdicao = (paciente) => {
-    setEditando(paciente.id);
-    setFormData({ ...paciente });
-  };
-
-  const cancelarEdicao = () => {
-    setEditando(null);
-    setFormData({
-      nome: '',
-      dataNascimento: '',
-      servico: '',
-      horario: '',
-      preco: ''
-    });
-  };
-
-  const salvarEdicao = async () => {
-    try {
-      await fetch(`http://localhost:5000/api/pacientes/${editando}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
-      setEditando(null);
+      fecharModal();
       buscarPacientes();
-    } catch (error) {
-      console.error('Erro ao editar paciente:', error);
+    } catch (erro) {
+      console.error('Erro ao deletar paciente:', erro);
     }
   };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  
 
   return (
     <div className="pacientes-container">
       <aside className="sidebar">
         <button className="active">Consultar Paciente</button>
         <button onClick={() => window.location.href = '/cadastrar'}>Cadastrar Paciente</button>
-        <button>Financeiro</button>
+        <button onClick={() => window.location.href = '/cadastrar-servico'}>Cadastrar Serviço</button>
+        <button onClick={() => window.location.href = '/financeiro'}>Financeiro</button>
+        <button onClick={() => window.location.href = '/'}>Home</button>
       </aside>
 
       <div className="main-content">
-      <div className="search-bar">
-  <input
-    type="text"
-    placeholder="Consultar nome"
-    value={busca}
-    onChange={(e) => setBusca(e.target.value)}
-  />
-</div>
-
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="Consultar nome"
+            value={filtro}
+            onChange={e => setFiltro(e.target.value)}
+          />
+        </div>
 
         <table>
+        {pacienteEditando && (
+  <EditarPacienteModal
+    paciente={pacienteEditando}
+    onClose={() => setPacienteEditando(null)}
+    onSave={fetchPacientes}
+  />
+)}
+
           <thead>
             <tr>
               <th>ID</th>
@@ -110,72 +129,39 @@ const ConsultarPacientes = () => {
             </tr>
           </thead>
           <tbody>
-          {pacientes
-  .filter(p => p.nome.toLowerCase().includes(busca.toLowerCase()))
-  .map((paciente) => (
-                <tr key={paciente.id}>
-                  <td>{paciente.id}</td>
-                  <td>
-                    {editando === paciente.id ? (
-                      <input name="nome" value={formData.nome} onChange={handleChange} />
-                    ) : (
-                      paciente.nome
-                    )}
-                  </td>
-                  <td>
-                    {editando === paciente.id ? (
-                      <input type="date" name="dataNascimento" value={formData.dataNascimento} onChange={handleChange} />
-                    ) : (
-                      paciente.dataNascimento
-                    )}
-                  </td>
-                  <td>
-                    {editando === paciente.id ? (
-                      <input name="servico" value={formData.servico} onChange={handleChange} />
-                    ) : (
-                      paciente.servico
-                    )}
-                  </td>
-                  <td>
-                    {editando === paciente.id ? (
-                      <input type="time" name="horario" value={formData.horario} onChange={handleChange} />
-                    ) : (
-                      paciente.horario
-                    )}
-                  </td>
-                  <td>
-                    {editando === paciente.id ? (
-                      <input type="number" name="preco" value={formData.preco} onChange={handleChange} />
-                    ) : (
-                      `R$${paciente.preco}`
-                    )}
-                  </td>
-                  <td>
-                    {editando === paciente.id ? (
-                      <>
-                        <button onClick={salvarEdicao}>Salvar</button>
-                        <button onClick={cancelarEdicao}>Cancelar</button>
-                      </>
-                    ) : (
-                      <FaEdit onClick={() => iniciarEdicao(paciente)} style={{ cursor: 'pointer' }} />
-                    )}
-                  </td>
-                  <td>
-                    <FaTrash
-                      onClick={() => deletarPaciente(paciente.id)}
-                      style={{ cursor: 'pointer', color: 'red' }}
-                    />
-                  </td>
-                </tr>
-              ))}
-            
+          {pacientesFiltrados.map((p) => (
+  <tr key={p.id}>
+    <td>{p.id}</td>
+    <td>{p.nome}</td>
+    <td>{formatarData(p.data)}</td>
+    <td>{p.servico}</td>
+    <td>{p.horario}</td>
+    <td>R${p.preco}</td>
+    <td><FaEdit onClick={() => setPacienteEditando(p)} style={{ cursor: 'pointer' }} /></td>
+    <td><FaTrash onClick={() => abrirModal(p)} /></td>
+  </tr>
+))}
+
           </tbody>
         </table>
+        {mostrarModal && (
+          <div className="modal-overlay">
+            <div className="modal">
+              <h3>Confirmar exclusão</h3>
+              <p>Tem certeza que deseja deletar <strong>{pacienteSelecionado.nome}</strong>?</p>
+              <div className="modal-actions">
+                <button onClick={deletarPaciente} style={{ background: 'red', color: '#fff' }}>Deletar</button>
+                <button onClick={fecharModal}>Cancelar</button>
+                </div>
       </div>
     </div>
+  )};
+  </div>
+  </div>
   );
-};
+}
 
 export default ConsultarPacientes;
+
 
 
