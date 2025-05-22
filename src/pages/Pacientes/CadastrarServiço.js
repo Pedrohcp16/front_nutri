@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Pacientes.scss';
 import axios from 'axios';
 
@@ -7,11 +8,11 @@ const CadastrarServico = () => {
   const [form, setForm] = useState({
     paciente_id: '',
     servico: '',
-    data: '',
     horario: '',
     preco: ''
   });
 
+  const navigate = useNavigate();
   useEffect(() => {
     const buscarClientes = async () => {
       try {
@@ -25,22 +26,28 @@ const CadastrarServico = () => {
     buscarClientes();
   }, []);
 
-  const handleChange = e => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const handleChange = (e) => {
+  setForm({ ...form, [e.target.name]: String(e.target.value) });
+};
 
-  const handleSubmit = async (e) => {
+
+const handleSubmit = async (e) => {
   e.preventDefault();
-  console.log(form); // Veja o que está indo
   try {
-    await axios.post('http://localhost:5000/api/servicos', form);
+    await axios.post('http://localhost:5000/api/servicos', {
+  ...form,
+  paciente_id: Number(form.paciente_id),
+  preco: Number(form.preco),
+});
+
     alert('Serviço cadastrado com sucesso!');
-    window.location.href = '/consultar';
+    navigate('/consultar'); // com useNavigate
   } catch (err) {
     console.error('Erro ao cadastrar serviço:', err.response?.data || err.message);
     alert('Erro ao cadastrar serviço');
   }
 };
+
 
 
   return (
@@ -58,14 +65,18 @@ const CadastrarServico = () => {
           <h2>Cadastrar Serviço</h2>
 
           <select name="paciente_id" value={form.paciente_id} onChange={handleChange} required>
-            <option value="">Selecione o Cliente</option>
-            {clientes.map((c) => (
-              <option key={c.id} value={c.id}>{c.nome}</option>
-            ))}
-          </select>
+  <option value="">Selecione o Cliente</option>
+  {clientes.map((c) => (
+  <option key={c.paciente_id} value={c.paciente_id}>
+    {c.nome}
+  </option>
+))}
+
+</select>
+
 
           <input name="servico" type="text" placeholder="Serviço" onChange={handleChange} required />
-          <input name="data" type="date" onChange={handleChange} required />
+          
           <input name="horario" type="time" onChange={handleChange} required />
           <input name="preco" type="number" placeholder="Preço" onChange={handleChange} required />
 

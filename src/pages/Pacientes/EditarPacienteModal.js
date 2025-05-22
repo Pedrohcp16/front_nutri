@@ -4,10 +4,7 @@ import './Pacientes.scss';
 const EditarPacienteModal = ({ paciente, onClose, onSave }) => {
   const [formData, setFormData] = useState({
     nome: paciente.nome,
-    servico: paciente.servico,
-    preco: paciente.preco,
-    horario: paciente.horario,
-    data: paciente.data,
+    data: paciente.data
   });
 
   const handleChange = (e) => {
@@ -27,13 +24,14 @@ const EditarPacienteModal = ({ paciente, onClose, onSave }) => {
       });
 
       if (res.ok) {
-        onSave(); // atualiza a lista no componente pai
+        onSave();
         onClose();
       } else {
         alert('Erro ao atualizar paciente');
       }
     } catch (err) {
       console.error(err);
+      alert('Erro ao atualizar paciente');
     }
   };
 
@@ -42,11 +40,19 @@ const EditarPacienteModal = ({ paciente, onClose, onSave }) => {
       <div className="modal">
         <h2>Editar Paciente</h2>
         <form onSubmit={handleSubmit} className="form">
-          <input type="text" name="nome" value={formData.nome} onChange={handleChange} placeholder="Nome" />
-          <input type="date" name="data" value={formData.data} onChange={handleChange} />
-          <input type="text" name="servico" value={formData.servico} onChange={handleChange} placeholder="Serviço" />
-          <input type="time" name="horario" value={formData.horario} onChange={handleChange} />
-          <input type="number" name="preco" value={formData.preco} onChange={handleChange} placeholder="Preço" />
+          <input
+            type="text"
+            name="nome"
+            value={formData.nome}
+            onChange={handleChange}
+            placeholder="Nome"
+          />
+          <input
+            type="date"
+            name="data"
+            value={formData.data}
+            onChange={handleChange}
+          />
           <button type="submit">Salvar</button>
           <button type="button" onClick={onClose}>Cancelar</button>
         </form>
